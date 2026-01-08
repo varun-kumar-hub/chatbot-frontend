@@ -139,7 +139,8 @@ const Dashboard = ({ session, onLogout }) => {
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.detail || 'Failed to get AI response');
+                const errorMessage = errData.detail || `Server Error ${response.status}: ${response.statusText}`;
+                throw new Error(errorMessage);
             }
 
             // Streaming Logic
