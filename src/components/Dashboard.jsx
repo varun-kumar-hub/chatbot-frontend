@@ -128,8 +128,16 @@ const Dashboard = ({ session, onLogout }) => {
             if (text) formData.append('message', text);
             if (file) formData.append('file', file);
 
-            const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
-            const response = await fetch(`${BACKEND_URL}/chat`, {
+            let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+            // Remove trailing slash if user added it by mistake
+            if (BACKEND_URL.endsWith('/')) {
+                BACKEND_URL = BACKEND_URL.slice(0, -1);
+            }
+
+            const endpoint = `${BACKEND_URL}/chat`;
+            console.log("Making API Request to:", endpoint);
+
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`
