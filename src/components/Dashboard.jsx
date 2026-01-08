@@ -185,12 +185,10 @@ const Dashboard = ({ session, onLogout }) => {
             }
 
             // Stream finished. 
-            // Refresh messages to get the real DB IDs (optional, but good for consistency)
-            // We delay slightly to ensure DB write finishes on backend (though backend writes after stream end, so simpler await is fine)
-            // Actually, since we have the data, we don't strictly *need* to re-fetch immediately for display, 
-            // but for ID consistency (to allow deleting etc) we should eventually.
-            // Let's just do it quietly.
-            fetchMessages(activeChatId);
+            // Local state is already updated via the stream loop.
+            // No need to re-fetch and trigger 'isLoading' spinner. 
+            // The DB sync happens on backend.
+            // fetchMessages(activeChatId);
 
             // Update Chat Title if it's the first message
             const currentChat = chats.find(c => c.id === activeChatId);
