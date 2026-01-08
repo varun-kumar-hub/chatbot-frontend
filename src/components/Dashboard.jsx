@@ -122,13 +122,14 @@ const Dashboard = ({ session, onLogout }) => {
         setMessages(prev => [...prev, tempMsg]);
 
         try {
-            // Call Backend API - Use Proxy
+            // Call Backend API
             const formData = new FormData();
             formData.append('chat_id', activeChatId);
             if (text) formData.append('message', text);
             if (file) formData.append('file', file);
 
-            const response = await fetch('/chat', {
+            const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+            const response = await fetch(`${BACKEND_URL}/chat`, {
                 method: 'POST',
                 headers: {
                     // 'Content-Type': 'multipart/form-data', // Browser sets this automatically with boundary
