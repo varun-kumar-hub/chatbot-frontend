@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { MessageSquare, Plus, LogOut, Trash2, X, Search } from 'lucide-react';
 import styles from '../styles/Sidebar.module.css';
 
-const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, onLogout, userEmail, isOpen, isMobile, onClose }) => {
+const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, onClearAll, onLogout, userEmail, isOpen, isMobile, onClose }) => {
     const [searchTerm, setSearchTerm] = useState('');
-
     // On Mobile, if not open, return null (or handle via CSS class for animation - let's use CSS class)
     const sidebarClass = isMobile
         ? `${styles.sidebar} ${styles.mobileSidebar} ${isOpen ? styles.open : ''}`
@@ -70,14 +69,21 @@ const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, o
 
                 <div className={styles.footer}>
                     <div className={styles.userProfile}>
-                        <div className={styles.avatar}>U</div>
+                        <div className={styles.avatar}>
+                            {userEmail ? userEmail[0].toUpperCase() : 'U'}
+                        </div>
                         <div className={styles.userInfo}>
                             <span className={styles.userName}>User</span>
                             <span className={styles.userEmail}>{userEmail}</span>
                         </div>
                     </div>
+
+                    <button className={styles.logoutBtn} onClick={onClearAll} title="Clear All History" style={{ color: '#ef4444' }}>
+                        <Trash2 size={16} />
+                    </button>
+
                     <button className={styles.logoutBtn} onClick={onLogout} title="Sign Out">
-                        <LogOut size={20} />
+                        <LogOut size={18} />
                     </button>
                 </div>
             </div>

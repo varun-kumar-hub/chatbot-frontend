@@ -240,6 +240,26 @@
 @media (max-width: 768px) {
     .header {
         padding: 0 16px;
+        background: rgba(5, 5, 5, 0.85);
+        /* More opaque on mobile */
+    }
+
+    .mobileMenuFloat {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 100;
+        background: var(--bg-glass-heavy);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+    }
+
+    .messageList {
+        padding-top: 80px;
+        /* Push messages down to avoid overlap */
     }
 
     .inputArea {

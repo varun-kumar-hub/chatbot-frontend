@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
+import ConfirmationModal from './ConfirmationModal';
 import { supabase } from '../supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
+import styles from '../styles/Dashboard.module.css';
 
 const Dashboard = ({ session, onLogout }) => {
     const [chats, setChats] = useState([]);
@@ -9,7 +12,12 @@ const Dashboard = ({ session, onLogout }) => {
     const [messages, setMessages] = useState([]);
     const [loadingMessages, setLoadingMessages] = useState(false);
     const [showSidebar, setShowSidebar] = useState(false);
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    // Delete Confirmation State
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [chatToDelete, setChatToDelete] = useState(null);
 
     // 0. Handle Resize
     useEffect(() => {
@@ -70,6 +78,63 @@ const Dashboard = ({ session, onLogout }) => {
     const handleSelectChat = (id) => {
         setActiveChatId(id);
         if (isMobile) setShowSidebar(false);
+    };
+
+    const onRequestDeleteChat = (chatId) => {
+        setChatToDelete(chatId); // ID string
+        setModalTitle("Delete Chat?");
+        setModalMessage("This will permanently delete this conversation. This action cannot be undone.");
+        setDeleteModalOpen(true);
+    };
+
+    const onRequestClearAll = () => {
+        setChatToDelete('ALL'); // Special flag
+        setModalTitle("Clear All Chats?");
+        setModalMessage("This will permanently delete ALL your conversations. This action cannot be undone.");
+        setDeleteModalOpen(true);
+    };
+
+    const confirmDeleteAction = async () => {
+        if (!chatToDelete) return;
+
+        try {
+            if (chatToDelete === 'ALL') {
+                // Delete all chats for user
+                // RLS ensures users only delete their own
+                const ids = chats.map(c => c.id);
+                if (ids.length > 0) {
+                    const { error: batchError } = await supabase.from('chats').delete().in('id', ids);
+                    if (batchError) throw batchError;
+                }
+
+                setChats([]);
+                setActiveChatId(null);
+                setMessages([]);
+
+            } else {
+                // Single Delete
+                const { error } = await supabase
+                    .from('chats')
+                    .delete()
+                    .eq('id', chatToDelete);
+
+                if (error) throw error;
+
+                setChats(chats.filter(c => c.id !== chatToDelete));
+
+                if (activeChatId === chatToDelete) {
+                    setActiveChatId(null);
+                    setMessages([]);
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting chat(s):', error);
+        } finally {
+            setDeleteModalOpen(false);
+            setChatToDelete(null);
+            setModalTitle('');
+            setModalMessage('');
+        }
     };
 
     const handleNewChat = async () => {
@@ -217,24 +282,40 @@ const Dashboard = ({ session, onLogout }) => {
             <Sidebar
                 chats={chats}
                 activeChatId={activeChatId}
-                onSelectChat={handleSelectChat}
+                onSelectChat={setActiveChatId}
                 onNewChat={handleNewChat}
-                onDeleteChat={handleDeleteChat}
-                onLogout={onLogout}
-                userEmail={session.user.email}
-
-                isOpen={showSidebar}
+                onDeleteChat={onRequestDeleteChat}
+                onClearAll={onRequestClearAll}
+                onLogout={handleLogout}
+                userEmail={userEmail}
+                isOpen={sidebarOpen}
                 isMobile={isMobile}
-                onClose={() => setShowSidebar(false)}
+                onClose={() => setSidebarOpen(false)}
             />
-            <ChatWindow
-                chat={activeChat}
-                messages={messages}
-                onSendMessage={handleSendMessage}
-                isLoading={loadingMessages}
 
-                isMobile={isMobile}
-                onToggleSidebar={() => setShowSidebar(!showSidebar)}
+            <main className={styles.mainContent}>
+                {/* ... existing ChatWindow ... */}
+                <ChatWindow
+                    activeChatId={activeChatId}
+                    messages={messages}
+                    onSendMessage={handleSendMessage}
+                    isLoading={isLoading}
+                    currentChatTitle={chats.find(c => c.id === activeChatId)?.title}
+                    onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+                    isMobile={isMobile}
+                />
+            </main>
+
+            <ConfirmationModal
+                isOpen={deleteModalOpen}
+                title={chatToDelete === 'ALL' ? "Clear All History?" : "Delete Chat?"}
+                message={chatToDelete === 'ALL'
+                    ? "This will permanently delete ALL your conversations. This cannot be undone."
+                    : "This will permanently delete this conversation. This action cannot be undone."}
+                confirmText={chatToDelete === 'ALL' ? "Clear Everything" : "Delete Forever"}
+                isDangerous={true}
+                onConfirm={confirmDeleteAction}
+                onCancel={() => setDeleteModalOpen(false)}
             />
         </div>
     );

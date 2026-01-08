@@ -226,7 +226,7 @@
     color: var(--text-primary);
 }
 
-/* Mobile Sidebar & Overlay */
+/* Mobile Drawer Styles */
 .mobileSidebar {
     position: fixed;
     top: 0;
@@ -239,6 +239,9 @@
     /* Elegant easing */
     background: #0a0a0c;
     /* Solid backing on mobile to prevent weird overlay behavior */
+    padding-top: 20px;
+    /* Safe area for status bar */
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .mobileSidebar.open {

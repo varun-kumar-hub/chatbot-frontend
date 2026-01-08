@@ -61,8 +61,8 @@ const ChatWindow = ({ chat, messages, onSendMessage, isLoading, isMobile, onTogg
         <div className={styles.chatWindow}>
             <header className={styles.header}>
                 {isMobile && (
-                    <button className={styles.menuBtn} onClick={onToggleSidebar}>
-                        <Menu size={20} />
+                    <button className={`${styles.menuBtn} ${styles.mobileMenuFloat}`} onClick={onToggleSidebar}>
+                        <Menu size={24} />
                     </button>
                 )}
                 {!isMobile && <Hash size={18} className={styles.headerIcon} />}
