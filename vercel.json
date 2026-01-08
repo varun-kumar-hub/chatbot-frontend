@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/chat",
+            "destination": "https://chatbot-backend-nine-rho.vercel.app/chat"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
