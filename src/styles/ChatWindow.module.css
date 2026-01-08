@@ -1,199 +1,54 @@
+/* Premium Chat Window */
 .chatWindow {
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background-color: var(--bg-chat);
+    /* Fancy radial gradient background for depth */
+    background: var(--bg-chat);
     position: relative;
+    height: 100vh;
 }
 
-.menuBtn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    border-radius: 8px;
-    transition: background-color 0.2s;
-}
-
-.menuBtn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
-}
-
+/* Glass Header */
 .header {
-    height: 60px;
-    border-bottom: 1px solid var(--border-color);
+    height: 64px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
-    padding: 0 24px;
-    gap: 12px;
-    background-color: rgba(15, 17, 21, 0.8);
-    backdrop-filter: blur(10px);
-    position: sticky;
-    top: 0;
+    gap: 16px;
+    background: rgba(5, 5, 5, 0.4);
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
+    border-bottom: 1px solid var(--border-light);
     z-index: 10;
-}
-
-.headerIcon {
-    color: var(--text-secondary);
 }
 
 .title {
     font-size: 1rem;
     font-weight: 600;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.messageList {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 20%;
-    /* Centered reading view */
-    display: flex;
-    flex-direction: column;
-}
-
-/* On smaller screens, reduce padding */
-@media (max-width: 1200px) {
-    .messageList {
-        padding: 24px 10%;
-    }
-}
-
-@media (max-width: 768px) {
-    .messageList {
-        padding: 24px 16px;
-    }
-}
-
-.inputArea {
-    padding: 24px 20%;
-    background-color: var(--bg-chat);
-    border-top: 1px solid var(--border-color);
-}
-
-@media (max-width: 1200px) {
-    .inputArea {
-        padding: 24px 10%;
-    }
-}
-
-@media (max-width: 768px) {
-    .inputArea {
-        padding: 24px 16px;
-    }
-}
-
-.inputContainer {
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    padding: 6px 6px 6px 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.2s;
-}
-
-.inputContainer:focus-within {
-    border-color: var(--text-secondary);
-}
-
-.input {
-    flex: 1;
-    background: transparent;
-    border: none;
+.menuBtn {
+    background: var(--bg-glass);
     color: var(--text-primary);
-    font-size: 1rem;
-    padding: 8px 0;
-    outline: none;
-}
-
-.input::placeholder {
-    color: #555;
-}
-
-/* Attach Button */
-.attachBtn {
-    background: none;
-    border: none;
-    color: #a0a0b0;
-    cursor: pointer;
-    padding: 0 10px;
-    display: flex;
-    align-items: center;
-    transition: color 0.2s;
-}
-
-.attachBtn:hover {
-    color: #fff;
-}
-
-/* File Preview Pill */
-.filePreview {
-    position: absolute;
-    bottom: 80px;
-    left: 20px;
-    background: #2a2a35;
-    padding: 8px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.9rem;
-    color: #e0e0e0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    border: 1px solid #3a3a45;
-    z-index: 5;
-}
-
-.removeFileBtn {
-    background: none;
-    border: none;
-    color: #ff6b6b;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.removeFileBtn:hover {
-    color: #ff4c4c;
-}
-
-.sendBtn {
-    background-color: var(--text-primary);
-    color: var(--bg-app);
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.2s;
+    border: 1px solid var(--border-light);
 }
 
-.sendBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.headerIcon {
+    color: var(--text-secondary);
+    opacity: 0.6;
 }
 
-.sendBtn:not(:disabled):hover {
-    opacity: 0.9;
-}
-
-.disclaimer {
-    text-align: center;
-    font-size: 0.75rem;
-    color: #444;
-    margin-top: 12px;
-}
-
+/* Empty State */
 .emptyState {
     flex: 1;
     display: flex;
@@ -201,31 +56,47 @@
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
+    text-align: center;
+    padding: 2rem;
 }
 
 .emptyIcon {
     font-size: 3rem;
     margin-bottom: 1rem;
-    opacity: 0.8;
+    filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.4));
 }
 
+/* Message List */
+.messageList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+    padding-bottom: 100px;
+    /* Space for floating input */
+}
+
+/* Typing Indicator */
 .typingIndicator {
+    align-self: flex-start;
+    background: var(--bg-glass);
+    padding: 12px 16px;
+    border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
     display: flex;
     gap: 4px;
-    padding: 12px 18px;
-    background-color: var(--bg-bubble-ai);
-    border-radius: var(--radius-lg);
-    border-bottom-left-radius: 4px;
-    width: fit-content;
-    margin-bottom: 24px;
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-    margin-left: 44px;
-    /* Icon + gap offset */
+    margin-top: 4px;
 }
 
 .typingIndicator span {
-    animation: bounce 1.4s infinite ease-in-out both;
+    width: 6px;
+    height: 6px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+    opacity: 0.6;
 }
 
 .typingIndicator span:nth-child(1) {
@@ -246,5 +117,132 @@
 
     40% {
         transform: scale(1);
+    }
+}
+
+/* Floating Input Area */
+.inputArea {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 24px 24px;
+    /* Gradient fade-out at bottom */
+    background: linear-gradient(to top, var(--bg-app) 20%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    z-index: 20;
+}
+
+.inputContainer {
+    width: 100%;
+    max-width: 800px;
+    /* Limit width */
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg-input);
+    backdrop-filter: blur(var(--blur-lg));
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    /* Pill/Capsule shape */
+    padding: 6px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+}
+
+.inputContainer:focus-within {
+    background: var(--bg-input-focus);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primaary);
+    font-size: 1rem;
+    padding: 12px 16px;
+}
+
+.input:focus {
+    outline: none;
+}
+
+.input::placeholder {
+    color: var(--text-secondary);
+}
+
+.attachBtn,
+.sendBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.attachBtn:hover {
+    background: var(--bg-glass-border);
+    color: var(--text-primary);
+}
+
+.sendBtn {
+    background: transparent;
+}
+
+.sendBtn:not(:disabled) {
+    background: var(--accent-primary);
+    color: white;
+    box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+}
+
+.sendBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.filePreview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-glass-heavy);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    border: 1px solid var(--border-light);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.removeFileBtn {
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.removeFileBtn:hover {
+    color: #ef4444;
+}
+
+.disclaimer {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Mobile Tweak: Ensure header stays put */
+@media (max-width: 768px) {
+    .header {
+        padding: 0 16px;
+    }
+
+    .inputArea {
+        padding: 16px;
     }
 }

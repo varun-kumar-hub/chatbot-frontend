@@ -1,8 +1,9 @@
-import React from 'react';
-import { MessageSquare, Plus, LogOut, Trash2, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { MessageSquare, Plus, LogOut, Trash2, X, Search } from 'lucide-react';
 import styles from '../styles/Sidebar.module.css';
 
 const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, onLogout, userEmail, isOpen, isMobile, onClose }) => {
+    const [searchTerm, setSearchTerm] = useState('');
 
     // On Mobile, if not open, return null (or handle via CSS class for animation - let's use CSS class)
     const sidebarClass = isMobile
@@ -33,9 +34,20 @@ const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, o
                     </button>
                 </div>
 
+                <div className={styles.searchContainer}>
+                    <Search size={16} className={styles.searchIcon} />
+                    <input
+                        type="text"
+                        placeholder="Search conversations..."
+                        className={styles.searchInput}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
                 <div className={styles.chatList}>
                     <div className={styles.sectionTitle}>Recent</div>
-                    {chats.map(chat => (
+                    {chats.filter(chat => (chat.title || 'New Chat').toLowerCase().includes(searchTerm.toLowerCase())).map(chat => (
                         <div
                             key={chat.id}
                             className={`${styles.chatItem} ${chat.id === activeChatId ? styles.active : ''}`}

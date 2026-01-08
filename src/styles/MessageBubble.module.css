@@ -1,8 +1,22 @@
+/* Premium Message Bubbles */
 .messageRow {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     margin-bottom: 24px;
-    max-width: 80%;
+    max-width: 85%;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .userRow {
@@ -16,57 +30,70 @@
 }
 
 .bubble {
-    padding: 12px 18px;
+    padding: 14px 20px;
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.6;
     border-radius: var(--radius-lg);
     position: relative;
     word-wrap: break-word;
+    box-shadow: var(--shadow-sm);
 }
 
 .userBubble {
-    background-color: var(--bg-bubble-user);
+    background: linear-gradient(135deg, var(--bg-bubble-user), #2563eb);
     color: #fff;
     border-bottom-right-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .aiBubble {
-    background-color: var(--bg-bubble-ai);
+    background: var(--bg-glass);
+    /* Uses glass rgba */
+    backdrop-filter: blur(var(--blur-md));
+    -webkit-backdrop-filter: blur(var(--blur-md));
     color: var(--text-primary);
     border-bottom-left-radius: 4px;
+    border: 1px solid var(--border-light);
 }
 
 .imageContainer {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     max-width: 100%;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
 }
 
 .image {
     max-width: 100%;
-    max-height: 300px;
-    border-radius: 8px;
-    object-fit: cover;
+    max-height: 350px;
     display: block;
+    transition: transform 0.3s;
+}
+
+.image:hover {
+    transform: scale(1.02);
 }
 
 .fileLink {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 8px 12px;
-    border-radius: 8px;
-    color: inherit;
+    gap: 10px;
+    background: var(--bg-glass-heavy);
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 0.9rem;
-    margin-bottom: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: background 0.2s;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-light);
+    transition: all 0.2s;
 }
 
 .fileLink:hover {
-    background: rgba(0, 0, 0, 0.3);
-    text-decoration: underline;
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
 }
 
 .text {
@@ -74,23 +101,25 @@
 }
 
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    margin-top: 4px;
-    /* Align with top of bubble */
+    margin-top: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .aiRow .avatar {
-    background-color: #2e323b;
-    color: var(--text-secondary);
+    background-color: var(--bg-glass-heavy);
+    color: var(--accent-primary);
+    border: 1px solid var(--border-light);
 }
 
 .userRow .avatar {
-    background-color: #3b3f4a;
-    color: var(--text-secondary);
+    background: linear-gradient(135deg, #4b5563, #374151);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }

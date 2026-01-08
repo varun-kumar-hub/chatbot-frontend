@@ -1,24 +1,44 @@
 :root {
-  /* Colors - Premium Dark/Modern Palette */
-  --bg-app: #0f1115; /* Deep dark background */
-  --bg-sidebar: #181a20; /* Slightly lighter sidebar */
-  --bg-chat: #0f1115;
-  --bg-input: #23262d; 
-  --bg-bubble-user: #2d6df6; /* Vivid blue */
-  --bg-bubble-ai: #23262d; /* Neutral dark gray */
-  --bg-hover: #2a2d35;
-  
-  --text-primary: #ededed;
-  --text-secondary: #a1a1aa;
-  --text-scintilla: #ffffff;
+  /* --- Premium "Obsidian" Palette --- */
+  --bg-app: #050505;
+  /* True Black/Deepest Gray */
+  --bg-sidebar: rgba(10, 10, 12, 0.7);
+  /* Glassy Sidebar */
+  --bg-chat: radial-gradient(circle at top right, #1a1d26 0%, #050505 100%);
 
-  --border-color: #32353e;
-  
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  
+  --bg-glass: rgba(20, 20, 25, 0.6);
+  --bg-glass-heavy: rgba(15, 15, 20, 0.85);
+  --bg-glass-border: rgba(255, 255, 255, 0.08);
+
+  --bg-input: rgba(30, 30, 35, 0.6);
+  --bg-input-focus: rgba(40, 40, 45, 0.9);
+
+  --accent-primary: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.5);
+
+  --bg-bubble-user: #3b82f6;
+  --bg-bubble-ai: rgba(255, 255, 255, 0.08);
+  /* Glass Bubble */
+
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-light: rgba(255, 255, 255, 0.05);
+
+  --font-family: 'Inter', -apple-system, system-ui, sans-serif;
+
+  /* --- Metrics --- */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --blur-md: 12px;
+  --blur-lg: 20px;
+
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
 * {
@@ -29,9 +49,10 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-app);
+  background: var(--bg-app);
+  /* Use background shorthand for potential gradients */
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   height: 100vh;
   overflow: hidden;
@@ -47,7 +68,8 @@ button {
   font-family: inherit;
 }
 
-input, textarea {
+input,
+textarea {
   font-family: inherit;
 }
 
@@ -55,13 +77,16 @@ input, textarea {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
 }
