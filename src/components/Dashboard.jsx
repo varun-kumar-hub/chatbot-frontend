@@ -132,7 +132,6 @@ const Dashboard = ({ session, onLogout }) => {
             const response = await fetch(`${BACKEND_URL}/chat`, {
                 method: 'POST',
                 headers: {
-                    // 'Content-Type': 'multipart/form-data', // Browser sets this automatically with boundary
                     'Authorization': `Bearer ${session.access_token}`
                 },
                 body: formData
@@ -143,10 +142,40 @@ const Dashboard = ({ session, onLogout }) => {
                 throw new Error(errData.detail || 'Failed to get AI response');
             }
 
-            const data = await response.json();
+            // Streaming Logic
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let aiResponseText = "";
 
-            // Refresh messages to get the real DB IDs for both messages
-            await fetchMessages(activeChatId);
+            // Create a placeholder AI message
+            const aiMsgId = 'ai-' + Date.now();
+            setMessages(prev => [...prev, {
+                id: aiMsgId,
+                sender: 'ai',
+                content: '', // Start empty
+                created_at: new Date().toISOString()
+            }]);
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                aiResponseText += chunk;
+
+                // Update UI with new chunk
+                setMessages(prev => prev.map(msg =>
+                    msg.id === aiMsgId ? { ...msg, content: aiResponseText } : msg
+                ));
+            }
+
+            // Stream finished. 
+            // Refresh messages to get the real DB IDs (optional, but good for consistency)
+            // We delay slightly to ensure DB write finishes on backend (though backend writes after stream end, so simpler await is fine)
+            // Actually, since we have the data, we don't strictly *need* to re-fetch immediately for display, 
+            // but for ID consistency (to allow deleting etc) we should eventually.
+            // Let's just do it quietly.
+            fetchMessages(activeChatId);
 
             // Update Chat Title if it's the first message
             const currentChat = chats.find(c => c.id === activeChatId);
