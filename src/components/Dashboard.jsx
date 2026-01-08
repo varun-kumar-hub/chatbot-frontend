@@ -129,9 +129,15 @@ const Dashboard = ({ session, onLogout }) => {
             if (file) formData.append('file', file);
 
             let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
-            // Remove trailing slash if user added it by mistake
+
+            // 1. Remove trailing slash
             if (BACKEND_URL.endsWith('/')) {
                 BACKEND_URL = BACKEND_URL.slice(0, -1);
+            }
+
+            // 2. Ensure Protocol (Fix for "chatbot-backend..." without https://)
+            if (BACKEND_URL && !BACKEND_URL.startsWith('http')) {
+                BACKEND_URL = `https://${BACKEND_URL}`;
             }
 
             const endpoint = `${BACKEND_URL}/chat`;
