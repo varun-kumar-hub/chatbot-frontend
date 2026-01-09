@@ -171,28 +171,67 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-bottom: 8px;
     flex: 1;
+    /* Keep flex: 1 for proper spacing */
     overflow: hidden;
+    /* Keep overflow: hidden */
     padding: 4px;
+    /* Keep padding */
     border-radius: var(--radius-md);
+    /* Keep border-radius */
     transition: background 0.2s;
+    /* Keep transition */
 }
 
 .userProfile:hover {
     background: var(--bg-glass);
 }
 
-.avatar {
+.footerActions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    /* Center these helper buttons */
+}
+
+.footerBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #7c3aed, #db2777);
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.footerBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.footerDivider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.05);
+    margin: 4px 0;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
     color: white;
-    font-weight: bold;
-    font-size: 14px;
+    font-size: 0.9rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 

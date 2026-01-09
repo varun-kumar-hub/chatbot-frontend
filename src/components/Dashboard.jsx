@@ -18,6 +18,16 @@ const Dashboard = ({ session, onLogout }) => {
     // Delete Confirmation State
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [chatToDelete, setChatToDelete] = useState(null);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalMessage, setModalMessage] = useState('');
+
+    // Theme State
+    const [isDarkMode, setIsDarkMode] = useState(true);
+
+    const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
+        document.body.classList.toggle('light-theme');
+    };
 
     // 0. Handle Resize
     useEffect(() => {
@@ -291,6 +301,8 @@ const Dashboard = ({ session, onLogout }) => {
                 isOpen={sidebarOpen}
                 isMobile={isMobile}
                 onClose={() => setSidebarOpen(false)}
+                onToggleTheme={toggleTheme}
+                isDarkMode={isDarkMode}
             />
 
             <main className={styles.mainContent}>
@@ -303,6 +315,7 @@ const Dashboard = ({ session, onLogout }) => {
                     currentChatTitle={chats.find(c => c.id === activeChatId)?.title}
                     onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
                     isMobile={isMobile}
+                    userName={session?.user?.user_metadata?.full_name?.split(' ')[0] || session?.user?.email?.split('@')[0] || 'User'}
                 />
             </main>
 
