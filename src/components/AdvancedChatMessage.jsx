@@ -189,6 +189,18 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
 
                 <div className={styles.feedbackRow}>
                     <button
+                        className={styles.feedbackBtn}
+                        onClick={() => {
+                            navigator.clipboard.writeText(content);
+                            setLiked('copy');
+                            setTimeout(() => setLiked(null), 2000);
+                        }}
+                        title="Copy Response"
+                    >
+                        {liked === 'copy' ? <Check size={14} color="#4ade80" /> : <Copy size={14} />}
+                    </button>
+                    <div className={styles.dividerVertical}></div>
+                    <button
                         className={`${styles.feedbackBtn} ${liked === 'up' ? styles.active : ''}`}
                         onClick={() => setLiked('up')}
                     >

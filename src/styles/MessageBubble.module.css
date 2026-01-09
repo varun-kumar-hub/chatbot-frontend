@@ -122,3 +122,45 @@
     color: var(--text-secondary);
     border: 1px solid var(--glass-border);
 }
+
+.bubbleContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+}
+
+.copyBtnUser {
+    position: absolute;
+    bottom: -20px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--text-muted);
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bubbleContainer:hover .copyBtnUser,
+.copyBtnUser:focus {
+    opacity: 1;
+}
+
+.copyBtnUser:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .copyBtnUser {
+        opacity: 0.5;
+        /* Always visible on mobile but dim */
+        bottom: -22px;
+    }
+}

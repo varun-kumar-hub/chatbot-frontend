@@ -277,7 +277,11 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
-.mermaidWrapper svg {
-    max-width: 100%;
-    height: auto;
+/* ... existing styles ... */
+.dividerVertical {
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    align-self: center;
+    margin: 0 4px;
 }
