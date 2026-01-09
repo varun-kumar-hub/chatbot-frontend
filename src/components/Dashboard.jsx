@@ -190,11 +190,61 @@ const Dashboard = ({ session, onLogout }) => {
         }
     };
 
+    // 4. Image Compression Helper
+    const compressImage = (file) => {
+        return new Promise((resolve) => {
+            // If not an image, return original
+            if (!file.type.startsWith('image/')) {
+                resolve(file);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const MAX_WIDTH = 1500;
+                    const MAX_HEIGHT = 1500;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        const newFile = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now(),
+                        });
+                        resolve(newFile);
+                    }, 'image/jpeg', 0.8);
+                };
+            };
+        });
+    };
+
     const handleSendMessage = async (text, file) => {
         if (!activeChatId) return;
         if (!text && !file) return;
 
-        // Optimistic UI Update
+        // Optimistic UI Update using ORIGINAL file (for instant preview)
         const tempMsg = {
             id: 'temp-' + Date.now(),
             sender: 'user',
@@ -205,11 +255,19 @@ const Dashboard = ({ session, onLogout }) => {
         setMessages(prev => [...prev, tempMsg]);
 
         try {
+            // Compress Image if needed
+            let fileToUpload = file;
+            if (file && file.type.startsWith('image/')) {
+                console.log("Compressing image...");
+                fileToUpload = await compressImage(file);
+                console.log(`Original: ${file.size}, Compressed: ${fileToUpload.size}`);
+            }
+
             // Call Backend API
             const formData = new FormData();
             formData.append('chat_id', activeChatId);
             if (text) formData.append('message', text);
-            if (file) formData.append('file', file);
+            if (fileToUpload) formData.append('file', fileToUpload);
 
             let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
