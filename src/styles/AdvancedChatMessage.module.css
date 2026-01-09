@@ -185,6 +185,7 @@
         transform: translateY(0);
     }
 }
+
 /* Generated Image Styles */
 .generatedImageContainer {
     width: 100%;
@@ -239,9 +240,17 @@
 }
 
 @keyframes pulse {
-    0% { opacity: 0.4; }
-    50% { opacity: 1; }
-    100% { opacity: 0.4; }
+    0% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.4;
+    }
 }
 
 .imageError {
@@ -252,4 +261,23 @@
     font-size: 0.9rem;
     border: 1px solid rgba(239, 68, 68, 0.2);
     margin: 12px 0;
+}
+
+/* Mermaid Diagram Styles */
+.mermaidWrapper {
+    background: #1e1e24;
+    /* Should match code block background */
+    padding: 20px;
+    border-radius: 8px;
+    margin: 1.5em 0;
+    overflow-x: auto;
+    /* Allow horizontal scroll for large diagrams */
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.mermaidWrapper svg {
+    max-width: 100%;
+    height: auto;
 }

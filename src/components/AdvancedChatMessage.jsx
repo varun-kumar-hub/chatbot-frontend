@@ -4,6 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check, ThumbsUp, ThumbsDown, Bot } from 'lucide-react';
 import remarkGfm from 'remark-gfm';
+import mermaid from 'mermaid';
 import styles from '../styles/AdvancedChatMessage.module.css';
 
 const GeneratedImage = ({ query }) => {
@@ -77,11 +78,49 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
         navigator.clipboard.writeText(code);
     };
 
+    React.useEffect(() => {
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            securityLevel: 'loose',
+        });
+    }, []);
+
+    const MermaidBlock = ({ chart }) => {
+        const [svg, setSvg] = useState('');
+        const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+
+        React.useEffect(() => {
+            const renderChart = async () => {
+                try {
+                    const { svg } = await mermaid.render(id, chart);
+                    setSvg(svg);
+                } catch (error) {
+                    console.error("Mermaid Render Error:", error);
+                    setSvg(`<div class="struct-error">Invalid Diagram Syntax</div>`);
+                }
+            };
+            if (chart) renderChart();
+        }, [chart, id]);
+
+        return (
+            <div
+                className={styles.mermaidWrapper}
+                dangerouslySetInnerHTML={{ __html: svg }}
+            />
+        );
+    };
+
     const CodeBlock = ({ node, inline, className, children, ...props }) => {
         const match = /language-(\w+)/.exec(className || '');
-        const [copied, setCopied] = useState(false);
         const codeText = String(children).replace(/\n$/, '');
 
+        // Handle Mermaid Diagrams
+        if (!inline && match && match[1] === 'mermaid') {
+            return <MermaidBlock chart={codeText} />;
+        }
+
+        const [copied, setCopied] = useState(false);
         const onCopy = () => {
             handleCopy(codeText);
             setCopied(true);
