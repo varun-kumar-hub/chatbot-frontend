@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check, ThumbsUp, ThumbsDown, Bot } from 'lucide-react';
 import remarkGfm from 'remark-gfm';
 import styles from '../styles/AdvancedChatMessage.module.css';
@@ -34,7 +34,7 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
                     </button>
                 </div>
                 <SyntaxHighlighter
-                    style={atomDark}
+                    style={vscDarkPlus}
                     language={match[1]}
                     PreTag="div"
                     customStyle={{ margin: 0, borderRadius: '0 0 8px 8px', background: '#1e1e24' }}
