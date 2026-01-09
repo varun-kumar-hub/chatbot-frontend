@@ -1,5 +1,5 @@
 {
-  "appId": "com.varun.neuralworkspace",
-  "appName": "Neural Workspace",
+  "appId": "com.varun.chatbot",
+  "appName": "chatbot",
   "webDir": "dist"
 }

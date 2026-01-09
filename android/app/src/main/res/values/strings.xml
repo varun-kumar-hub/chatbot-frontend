@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Neural Workspace</string>
-    <string name="title_activity_main">Neural Workspace</string>
+    <string name="app_name">chatbot</string>
+    <string name="title_activity_main">chatbot</string>
     <string name="package_name">com.varun.neuralworkspace</string>
     <string name="custom_url_scheme">com.varun.neuralworkspace</string>
 </resources>

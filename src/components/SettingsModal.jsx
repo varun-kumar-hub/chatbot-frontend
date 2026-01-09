@@ -3,7 +3,7 @@ import { X, Moon, Sun, Monitor, Cpu, User, Trash2, LogOut } from 'lucide-react';
 import styles from '../styles/SettingsModal.module.css';
 import { PERSONAS } from '../data/personas';
 
-const SettingsModal = ({ isOpen, onClose, isDarkMode, onToggleTheme, activePersona, onSetPersona, userEmail }) => {
+const SettingsModal = ({ isOpen, onClose, isDarkMode, onToggleTheme, activePersona, onSetPersona, userEmail, onClearAll, onLogout }) => {
     const [mount, setMount] = useState(false);
 
     useEffect(() => {

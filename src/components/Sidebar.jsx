@@ -50,7 +50,10 @@ const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, o
                         <div
                             key={chat.id}
                             className={`${styles.chatItem} ${chat.id === activeChatId ? styles.active : ''}`}
-                            onClick={() => { onSelectChat(chat.id); }}
+                            onClick={() => {
+                                onSelectChat(chat.id);
+                                if (isMobile) onClose();
+                            }}
                         >
                             <MessageSquare size={16} className={styles.chatIcon} />
                             <span className={styles.chatTitle}>{chat.title || 'New Chat'}</span>

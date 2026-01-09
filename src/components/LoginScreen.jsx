@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LogIn, Sparkles, Code, Zap, Shield, Cpu } from 'lucide-react';
 import styles from '../styles/LoginScreen.module.css';
 import { supabase } from '../supabaseClient';
+import { Capacitor } from '@capacitor/core';
 
 const LoginScreen = () => {
     const [scrolled, setScrolled] = useState(false);
@@ -12,6 +13,15 @@ const LoginScreen = () => {
         const { left, top } = containerRef.current.getBoundingClientRect();
         const x = e.clientX - left;
         const y = e.clientY - top;
+        containerRef.current.style.setProperty('--mouse-x', `${x}px`);
+        containerRef.current.style.setProperty('--mouse-y', `${y}px`);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!containerRef.current || !e.touches[0]) return;
+        const { left, top } = containerRef.current.getBoundingClientRect();
+        const x = e.touches[0].clientX - left;
+        const y = e.touches[0].clientY - top;
         containerRef.current.style.setProperty('--mouse-x', `${x}px`);
         containerRef.current.style.setProperty('--mouse-y', `${y}px`);
     };
@@ -34,10 +44,7 @@ const LoginScreen = () => {
     // Typing Effect
     useEffect(() => {
         const currentPhrase = phrases[phraseIndex];
-        // ... (rest of simple typing logic works fine)
-        const speed = isDeleting ? 50 : 100;
-
-        const timer = setTimeout(() => {
+        const timeout = setTimeout(() => {
             if (!isDeleting && text === currentPhrase) {
                 setTimeout(() => setIsDeleting(true), 1500);
             } else if (isDeleting && text === "") {
@@ -46,17 +53,22 @@ const LoginScreen = () => {
             } else {
                 setText(currentPhrase.substring(0, text.length + (isDeleting ? -1 : 1)));
             }
-        }, speed);
-
-        return () => clearTimeout(timer);
+        }, isDeleting ? 50 : 100);
+        return () => clearTimeout(timeout);
     }, [text, isDeleting, phraseIndex]);
 
     const handleGoogleLogin = async () => {
         try {
+            const isNative = Capacitor.isNativePlatform();
+            // Use the specific custom scheme URL for mobile, standard origin for web
+            const redirectTo = isNative
+                ? 'com.varun.chatbot://login-callback'
+                : window.location.origin;
+
             await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.origin,
+                    redirectTo: redirectTo,
                     queryParams: {
                         prompt: 'select_account'
                     }
@@ -72,6 +84,7 @@ const LoginScreen = () => {
             className={styles.container}
             ref={containerRef}
             onMouseMove={handleMouseMove}
+            onTouchMove={handleTouchMove}
         >
             {/* Background Elements */}
             <div className={styles.bgGlow}></div>
