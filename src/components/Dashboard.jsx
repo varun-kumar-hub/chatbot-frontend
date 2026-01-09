@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 import ConfirmationModal from './ConfirmationModal';
+import SettingsModal from './SettingsModal';
 import { supabase } from '../supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 import styles from '../styles/Dashboard.module.css';
@@ -15,6 +16,11 @@ const Dashboard = ({ session, onLogout }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+    // Settings State
+    const [showSettings, setShowSettings] = useState(false);
+    const [activePersona, setActivePersona] = useState('standard');
+    const [isDarkMode, setIsDarkMode] = useState(true);
+
     // Delete/Logout Confirmation State
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [actionType, setActionType] = useState(null); // 'DELETE_SINGLE', 'DELETE_ALL', 'LOGOUT'
@@ -22,6 +28,11 @@ const Dashboard = ({ session, onLogout }) => {
     const [modalTitle, setModalTitle] = useState('');
     const [modalMessage, setModalMessage] = useState('');
     const [modalConfirmText, setModalConfirmText] = useState('Confirm');
+
+    const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
+        document.body.classList.toggle('light-theme');
+    };
 
     // 0. Handle Resize
     useEffect(() => {
@@ -77,14 +88,6 @@ const Dashboard = ({ session, onLogout }) => {
         if (error) console.error('Error fetching messages:', error);
         else setMessages(data);
         setLoadingMessages(false);
-    };
-
-    // Theme State
-    const [isDarkMode, setIsDarkMode] = useState(true);
-
-    const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        document.body.classList.toggle('light-theme');
     };
 
     const onRequestDeleteChat = (chatId) => {
@@ -175,21 +178,6 @@ const Dashboard = ({ session, onLogout }) => {
         }
     };
 
-    const handleDeleteChat = async (id) => {
-        const { error } = await supabase.from('chats').delete().eq('id', id);
-        if (error) {
-            console.error('Error deleting chat:', error);
-            return;
-        }
-
-        const newChats = chats.filter(c => c.id !== id);
-        setChats(newChats);
-
-        if (activeChatId === id) {
-            setActiveChatId(newChats.length > 0 ? newChats[0].id : null);
-        }
-    };
-
     // 4. Image Compression Helper
     const compressImage = (file) => {
         return new Promise((resolve) => {
@@ -269,6 +257,16 @@ const Dashboard = ({ session, onLogout }) => {
             if (text) formData.append('message', text);
             if (fileToUpload) formData.append('file', fileToUpload);
 
+            // Add persona prompt if needed (Usually handled by prompt engineering on backend or frontend before send. 
+            // Since we moved state here, backend prompt injection is cleaner if handled here or in ChatWindow submit.
+            // Let's rely on ChatWindow to construct the final text or pass activePersona to backend? 
+            // For now, let's inject it into the message here if we want strictly frontend control, 
+            // BUT ChatWindow submit logic handled it before. 
+            // Wait, ChatWindow's handleSubmit was: "const persona = PERSONAS.find...".
+            // Since Dashboard now owns the state, but ChatWindow handles the "Input", 
+            // ChatWindow should prepend the prompt BEFORE calling onSendMessage.
+            // So onSendMessage expects the *final* text. Correct.
+
             let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
             // 1. Remove trailing slash
@@ -325,12 +323,6 @@ const Dashboard = ({ session, onLogout }) => {
                 ));
             }
 
-            // Stream finished. 
-            // Local state is already updated via the stream loop.
-            // No need to re-fetch and trigger 'isLoading' spinner. 
-            // The DB sync happens on backend.
-            // fetchMessages(activeChatId);
-
             // Update Chat Title if it's the first message
             const currentChat = chats.find(c => c.id === activeChatId);
             if (currentChat && currentChat.title === 'New Chat' && text) {
@@ -351,8 +343,6 @@ const Dashboard = ({ session, onLogout }) => {
         }
     };
 
-    const activeChat = chats.find(c => c.id === activeChatId);
-
     return (
         <div className={styles.dashboardContainer}>
             <Sidebar
@@ -369,10 +359,10 @@ const Dashboard = ({ session, onLogout }) => {
                 onClose={() => setShowSidebar(false)}
                 onToggleTheme={toggleTheme}
                 isDarkMode={isDarkMode}
+                onOpenSettings={() => setShowSettings(true)}
             />
 
             <main className={styles.mainContent}>
-                {/* ... existing ChatWindow ... */}
                 <ChatWindow
                     activeChatId={activeChatId}
                     messages={messages}
@@ -382,6 +372,8 @@ const Dashboard = ({ session, onLogout }) => {
                     onToggleSidebar={() => setShowSidebar(!showSidebar)}
                     isMobile={isMobile}
                     userName={session?.user?.user_metadata?.full_name?.split(' ')[0] || session?.user?.email?.split('@')[0] || 'User'}
+                    activePersona={activePersona}
+                    onOpenSettings={() => setShowSettings(true)}
                 />
             </main>
 
@@ -393,6 +385,16 @@ const Dashboard = ({ session, onLogout }) => {
                 isDangerous={actionType !== 'LOGOUT'}
                 onConfirm={handleConfirmAction}
                 onCancel={() => setConfirmationModalOpen(false)}
+            />
+
+            <SettingsModal
+                isOpen={showSettings}
+                onClose={() => setShowSettings(false)}
+                isDarkMode={isDarkMode}
+                onToggleTheme={toggleTheme}
+                activePersona={activePersona}
+                onSetPersona={setActivePersona}
+                userEmail={session?.user?.email}
             />
         </div>
     );

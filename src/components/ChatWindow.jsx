@@ -3,19 +3,11 @@ import { Send, Hash, Paperclip, X, Menu, Sparkles, Code, Mic, Briefcase } from '
 import MessageBubble from './MessageBubble';
 import AdvancedChatMessage from './AdvancedChatMessage';
 import styles from '../styles/ChatWindow.module.css';
+import { PERSONAS } from '../data/personas';
 
-const PERSONAS = [
-    { id: 'standard', name: 'Standard', icon: <Sparkles size={14} />, prompt: '' },
-    { id: 'dev', name: 'Developer', icon: <Code size={14} />, prompt: '[SYSTEM: Act as a Senior Software Engineer. Provide efficient, well-commented code.] ' },
-    { id: 'researcher', name: 'Researcher', icon: <Briefcase size={14} />, prompt: '[SYSTEM: Act as a Document Analyst. Analyze the context/files deeply and provide cited, factual answers.] ' },
-    { id: 'designer', name: 'Designer', icon: <Sparkles size={14} />, prompt: '[SYSTEM: Act as a Creative Director. Focus on visual descriptions and generate images when appropriate.] ' },
-    { id: 'witty', name: 'Witty', icon: <Mic size={14} />, prompt: '[SYSTEM: Be witty, sarcastic, and entertaining, but still helpful.] ' }
-];
-
-const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, isLoading, isMobile, onToggleSidebar, userName = 'User' }) => {
+const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, isLoading, isMobile, onToggleSidebar, userName = 'User', activePersona = 'standard', onOpenSettings }) => {
     const [input, setInput] = useState('');
     const [file, setFile] = useState(null);
-    const [activePersona, setActivePersona] = useState('standard');
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -39,8 +31,9 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
 
         let finalMessage = input;
         const persona = PERSONAS.find(p => p.id === activePersona);
-        if (persona && persona.prompt) {
-            // Prepend persona prompt only if text exists
+
+        // Add Prompt only if it's NOT the standard persona and NOT an empty message
+        if (persona && persona.prompt && persona.id !== 'standard') {
             if (finalMessage) {
                 finalMessage = persona.prompt + finalMessage;
             }
@@ -52,19 +45,16 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
         setFile(null);
         if (fileInputRef.current) fileInputRef.current.value = '';
 
-        // Parent handles the async send with the modified message
         onSendMessage(finalMessage, userFile);
     };
 
-    // Clean display of input (don't show the hidden prompt)
-    // We already handle this by only prepending on submit.
-
+    // --- Empty State UI ---
     if (!activeChatId) {
         return (
             <div className={styles.chatWindow}>
                 <header className={styles.header}>
                     {isMobile && (
-                        <button className={`${styles.menuBtn} ${styles.mobileMenuFloat}`} onClick={onToggleSidebar}>
+                        <button className={styles.menuBtn} onClick={onToggleSidebar}>
                             <Menu size={24} />
                         </button>
                     )}
@@ -76,36 +66,45 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
                             <Sparkles size={48} color="#8b5cf6" />
                         </div>
                         <h1 className={styles.heroTitle}>Welcome, <span className={styles.gradientText}>{userName}</span></h1>
-                        <p className={styles.heroSubtitle}>Select a conversation to begin your session.</p>
+                        <p className={styles.heroSubtitle}>Select a conversation or start a new one.</p>
                     </div>
                 </div>
             </div>
         );
     }
 
+    // --- Active Chat UI ---
+    const currentPersonaData = PERSONAS.find(p => p.id === activePersona) || PERSONAS[0];
+
     return (
         <div className={styles.chatWindow}>
             <header className={styles.header}>
                 {isMobile && (
-                    <button className={`${styles.menuBtn} ${styles.mobileMenuFloat}`} onClick={onToggleSidebar}>
+                    <button className={styles.menuBtn} onClick={onToggleSidebar}>
                         <Menu size={24} />
                     </button>
                 )}
-                {!isMobile && <Hash size={18} className={styles.headerIcon} />}
                 <h2 className={styles.title}>{currentChatTitle || 'New Chat'}</h2>
+                {!isMobile && (
+                    <div style={{ position: 'absolute', right: 20, display: 'flex', alignItems: 'center', gap: 6, opacity: 0.6, fontSize: '0.8rem' }}>
+                        {currentPersonaData.icon}
+                        <span>{currentPersonaData.name} Mode</span>
+                    </div>
+                )}
             </header>
 
             <div className={styles.messageList}>
-                {/* Empty State Hero for New Chat */}
                 {messages.length === 0 && (
                     <div className={styles.chatHero}>
                         <div className={styles.heroIcon}>
-                            <Sparkles size={42} color="#8b5cf6" />
+                            {currentPersonaData.icon}
                         </div>
                         <h1 className={styles.heroTitle}>
                             Hi <span className={styles.gradientText}>{userName}</span>
                         </h1>
-                        <h2 className={styles.heroSubtitle}>Where should we start?</h2>
+                        <h2 className={styles.heroSubtitle}>
+                            I'm ready to help as your <b>{currentPersonaData.name}</b>.
+                        </h2>
                     </div>
                 )}
 
@@ -123,31 +122,16 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
                         );
                     }
                 })}
-                {/* Fallback spinner if loading but no message object yet (rare with current logic but good for safety) */}
+
                 {isLoading && messages.length > 0 && messages[messages.length - 1].sender === 'user' && (
-                    <div className={`${styles.typingIndicator} ${styles.aiTyper} `}>
-                        <span>●</span><span>●</span><span>●</span>
+                    <div className={styles.typingIndicator}>
+                        <span></span><span></span><span></span>
                     </div>
                 )}
                 <div ref={messagesEndRef} />
             </div>
 
             <div className={styles.inputArea}>
-                {/* Persona Selector */}
-                <div className={styles.personaBar}>
-                    {PERSONAS.map(p => (
-                        <button
-                            key={p.id}
-                            className={`${styles.personaChip} ${activePersona === p.id ? styles.activeChip : ''}`}
-                            onClick={() => setActivePersona(p.id)}
-                            title={p.name}
-                        >
-                            {p.icon}
-                            <span>{p.name}</span>
-                        </button>
-                    ))}
-                </div>
-
                 {file && (
                     <div className={styles.filePreview}>
                         <span>📎 {file.name}</span>
@@ -165,6 +149,7 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
                         type="button"
                         className={styles.attachBtn}
                         onClick={() => fileInputRef.current?.click()}
+                        title="Attach Image"
                     >
                         <Paperclip size={18} />
                     </button>
@@ -172,16 +157,17 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
                     <input
                         type="text"
                         className={styles.input}
-                        placeholder={`Message as ${PERSONAS.find(p => p.id === activePersona)?.name}...`}
+                        placeholder={`Message as ${currentPersonaData.name}...`}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
+                        autoFocus
                     />
                     <button type="submit" className={styles.sendBtn} disabled={!input.trim() && !file}>
                         <Send size={18} />
                     </button>
                 </form>
                 <div className={styles.disclaimer}>
-                    AI can make mistakes. Please verify important information.
+                    Gemini 2.0 Flash Exp • <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={onOpenSettings}>Settings</span>
                 </div>
             </div>
         </div>
