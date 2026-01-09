@@ -73,10 +73,12 @@ const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, o
                             {userEmail ? userEmail[0].toUpperCase() : 'U'}
                         </div>
                         <div className={styles.userInfo}>
-                            <span className={styles.userName}>User</span>
-                            <span className={styles.userEmail}>{userEmail}</span>
+                            <span className={styles.userName}>Varun Kumar</span>
+                            <span className={styles.userEmail} title={userEmail}>{userEmail}</span>
                         </div>
                     </div>
+
+                    <div className={styles.footerDivider} />
 
                     <div className={styles.footerActions}>
                         <button className={styles.footerBtn} onClick={onToggleTheme} title="Toggle Theme">
@@ -85,17 +87,13 @@ const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, o
                         <button className={styles.footerBtn} title="Settings">
                             <Settings size={18} />
                         </button>
+                        <button className={styles.footerBtn} onClick={onClearAll} title="Clear All History" style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }}>
+                            <Trash2 size={18} />
+                        </button>
+                        <button className={styles.footerBtn} onClick={onLogout} title="Sign Out">
+                            <LogOut size={18} />
+                        </button>
                     </div>
-
-                    <div className={styles.footerDivider} />
-
-                    <button className={styles.logoutBtn} onClick={onClearAll} title="Clear All History" style={{ color: '#ef4444' }}>
-                        <Trash2 size={16} />
-                    </button>
-
-                    <button className={styles.logoutBtn} onClick={onLogout} title="Sign Out">
-                        <LogOut size={18} />
-                    </button>
                 </div>
             </div>
         </>

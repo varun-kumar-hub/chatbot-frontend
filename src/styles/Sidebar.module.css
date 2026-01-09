@@ -162,8 +162,8 @@
     padding-top: 1.25rem;
     border-top: 1px solid var(--border-light);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 12px;
     margin-top: auto;
 }
 
@@ -171,35 +171,23 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 8px;
-    flex: 1;
-    /* Keep flex: 1 for proper spacing */
-    overflow: hidden;
-    /* Keep overflow: hidden */
-    padding: 4px;
-    /* Keep padding */
+    padding: 8px;
     border-radius: var(--radius-md);
-    /* Keep border-radius */
-    transition: background 0.2s;
-    /* Keep transition */
-}
-
-.userProfile:hover {
-    background: var(--bg-glass);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .footerActions {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
-    justify-content: center;
-    /* Center these helper buttons */
+    width: 100%;
 }
 
 .footerBtn {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-secondary);
-    width: 36px;
     height: 36px;
     border-radius: 8px;
     display: flex;
@@ -207,6 +195,8 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
+    width: 100%;
+    /* Fill grid cell */
 }
 
 .footerBtn:hover {
@@ -217,8 +207,11 @@
 
 .footerDivider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--border-light);
+    width: 100%;
     margin: 4px 0;
+    display: none;
+    /* Hide divider for cleaner look, we use gap */
 }
 
 .avatar {
@@ -250,6 +243,11 @@
 .userEmail {
     font-size: 0.75rem;
     color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+    /* Ensure truncation */
 }
 
 .logoutBtn {
