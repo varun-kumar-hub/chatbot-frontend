@@ -1,10 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LogIn, Sparkles, Code, Zap, Shield, Cpu } from 'lucide-react';
 import styles from '../styles/LoginScreen.module.css';
 import { supabase } from '../supabaseClient';
 
 const LoginScreen = () => {
     const [scrolled, setScrolled] = useState(false);
+    const containerRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+        if (!containerRef.current) return;
+        const { left, top } = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+        containerRef.current.style.setProperty('--mouse-x', `${x}px`);
+        containerRef.current.style.setProperty('--mouse-y', `${y}px`);
+    };
 
     // Typing animation text
     const phrases = ["Neural Workspace", "Cognitive Engine", "Creative Partner"];
@@ -24,6 +34,7 @@ const LoginScreen = () => {
     // Typing Effect
     useEffect(() => {
         const currentPhrase = phrases[phraseIndex];
+        // ... (rest of simple typing logic works fine)
         const speed = isDeleting ? 50 : 100;
 
         const timer = setTimeout(() => {
@@ -54,7 +65,11 @@ const LoginScreen = () => {
     };
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            ref={containerRef}
+            onMouseMove={handleMouseMove}
+        >
             {/* Background Elements */}
             <div className={styles.bgGlow}></div>
             <div className={styles.gridOverlay}></div>
