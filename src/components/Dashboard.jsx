@@ -198,7 +198,8 @@ const Dashboard = ({ session, onLogout }) => {
         const tempMsg = {
             id: 'temp-' + Date.now(),
             sender: 'user',
-            content: text || (file ? `[Uploading: ${file.name}]` : ""),
+            content: text || (file ? "" : ""),
+            file_url: file ? URL.createObjectURL(file) : null,
             created_at: new Date().toISOString()
         };
         setMessages(prev => [...prev, tempMsg]);
