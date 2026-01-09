@@ -296,11 +296,11 @@ const Dashboard = ({ session, onLogout }) => {
                 onNewChat={handleNewChat}
                 onDeleteChat={onRequestDeleteChat}
                 onClearAll={onRequestClearAll}
-                onLogout={handleLogout}
-                userEmail={userEmail}
-                isOpen={sidebarOpen}
+                onLogout={onLogout}
+                userEmail={session?.user?.email}
+                isOpen={showSidebar}
                 isMobile={isMobile}
-                onClose={() => setSidebarOpen(false)}
+                onClose={() => setShowSidebar(false)}
                 onToggleTheme={toggleTheme}
                 isDarkMode={isDarkMode}
             />
@@ -313,7 +313,7 @@ const Dashboard = ({ session, onLogout }) => {
                     onSendMessage={handleSendMessage}
                     isLoading={isLoading}
                     currentChatTitle={chats.find(c => c.id === activeChatId)?.title}
-                    onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+                    onToggleSidebar={() => setShowSidebar(!showSidebar)}
                     isMobile={isMobile}
                     userName={session?.user?.user_metadata?.full_name?.split(' ')[0] || session?.user?.email?.split('@')[0] || 'User'}
                 />
