@@ -288,7 +288,7 @@ const Dashboard = ({ session, onLogout }) => {
     const activeChat = chats.find(c => c.id === activeChatId);
 
     return (
-        <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', position: 'relative' }}>
+        <div className={styles.dashboardContainer}>
             <Sidebar
                 chats={chats}
                 activeChatId={activeChatId}

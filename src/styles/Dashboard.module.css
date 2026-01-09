@@ -1,0 +1,17 @@
+.dashboardContainer {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--bg-app);
+}
+
+.mainContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    /* No overflow-y: auto here, ChatWindow handles its own scroll */
+}
