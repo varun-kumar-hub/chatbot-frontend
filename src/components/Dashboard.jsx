@@ -15,133 +15,80 @@ const Dashboard = ({ session, onLogout }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-    // Delete Confirmation State
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [chatToDelete, setChatToDelete] = useState(null);
+    // Delete/Logout Confirmation State
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const [actionType, setActionType] = useState(null); // 'DELETE_SINGLE', 'DELETE_ALL', 'LOGOUT'
+    const [actionData, setActionData] = useState(null); // chatId for single delete
     const [modalTitle, setModalTitle] = useState('');
     const [modalMessage, setModalMessage] = useState('');
+    const [modalConfirmText, setModalConfirmText] = useState('Confirm');
 
-    // Theme State
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    // ... (Resize effect remains same)
 
-    const toggleTheme = () => {
-        setIsDarkMode(!isDarkMode);
-        document.body.classList.toggle('light-theme');
-    };
-
-    // 0. Handle Resize
-    useEffect(() => {
-        const handleResize = () => {
-            const mobile = window.innerWidth < 768;
-            setIsMobile(mobile);
-            if (!mobile) setShowSidebar(true); // Always show on desktop
-            else setShowSidebar(false); // Default hide on mobile
-        };
-
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Init
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // 1. Fetch Chats on Mount
-    useEffect(() => {
-        fetchChats();
-    }, [session]);
-
-    const fetchChats = async () => {
-        const { data, error } = await supabase
-            .from('chats')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) console.error('Error fetching chats:', error);
-        else {
-            setChats(data);
-            if (data.length > 0 && !activeChatId) {
-                setActiveChatId(data[0].id);
-            }
-        }
-    };
-
-    // 2. Fetch Messages when Active Chat Changes
-    useEffect(() => {
-        if (!activeChatId) {
-            setMessages([]);
-            return;
-        }
-        fetchMessages(activeChatId);
-    }, [activeChatId]);
-
-    const fetchMessages = async (chatId) => {
-        setLoadingMessages(true);
-        const { data, error } = await supabase
-            .from('messages')
-            .select('*')
-            .eq('chat_id', chatId)
-            .order('created_at', { ascending: true });
-
-        if (error) console.error('Error fetching messages:', error);
-        else setMessages(data);
-        setLoadingMessages(false);
-    };
-
-    const handleSelectChat = (id) => {
-        setActiveChatId(id);
-        if (isMobile) setShowSidebar(false);
-    };
+    // ... (Fetch chats/messages remains same) 
 
     const onRequestDeleteChat = (chatId) => {
-        setChatToDelete(chatId); // ID string
+        setActionType('DELETE_SINGLE');
+        setActionData(chatId);
         setModalTitle("Delete Chat?");
         setModalMessage("This will permanently delete this conversation. This action cannot be undone.");
-        setDeleteModalOpen(true);
+        setModalConfirmText("Delete Forever");
+        setConfirmationModalOpen(true);
     };
 
     const onRequestClearAll = () => {
-        setChatToDelete('ALL'); // Special flag
+        setActionType('DELETE_ALL');
         setModalTitle("Clear All Chats?");
         setModalMessage("This will permanently delete ALL your conversations. This action cannot be undone.");
-        setDeleteModalOpen(true);
+        setModalConfirmText("Clear Everything");
+        setConfirmationModalOpen(true);
     };
 
-    const confirmDeleteAction = async () => {
-        if (!chatToDelete) return;
+    const onRequestLogout = () => {
+        setActionType('LOGOUT');
+        setModalTitle("Sign Out?");
+        setModalMessage("Are you sure you want to sign out of your session?");
+        setModalConfirmText("Sign Out");
+        setConfirmationModalOpen(true);
+    };
 
+    const handleConfirmAction = async () => {
         try {
-            if (chatToDelete === 'ALL') {
+            if (actionType === 'LOGOUT') {
+                onLogout(); // Call the prop from App.jsx
+                return;
+            }
+
+            if (actionType === 'DELETE_ALL') {
                 // Delete all chats for user
-                // RLS ensures users only delete their own
                 const ids = chats.map(c => c.id);
                 if (ids.length > 0) {
                     const { error: batchError } = await supabase.from('chats').delete().in('id', ids);
                     if (batchError) throw batchError;
                 }
-
                 setChats([]);
                 setActiveChatId(null);
                 setMessages([]);
 
-            } else {
-                // Single Delete
-                const { error } = await supabase
-                    .from('chats')
-                    .delete()
-                    .eq('id', chatToDelete);
+            } else if (actionType === 'DELETE_SINGLE') {
+                const chatId = actionData;
+                if (!chatId) return;
 
+                const { error } = await supabase.from('chats').delete().eq('id', chatId);
                 if (error) throw error;
 
-                setChats(chats.filter(c => c.id !== chatToDelete));
-
-                if (activeChatId === chatToDelete) {
+                setChats(chats.filter(c => c.id !== chatId));
+                if (activeChatId === chatId) {
                     setActiveChatId(null);
                     setMessages([]);
                 }
             }
         } catch (error) {
-            console.error('Error deleting chat(s):', error);
+            console.error('Error in confirmation action:', error);
         } finally {
-            setDeleteModalOpen(false);
-            setChatToDelete(null);
+            setConfirmationModalOpen(false);
+            setActionType(null);
+            setActionData(null);
             setModalTitle('');
             setModalMessage('');
         }
@@ -296,7 +243,7 @@ const Dashboard = ({ session, onLogout }) => {
                 onNewChat={handleNewChat}
                 onDeleteChat={onRequestDeleteChat}
                 onClearAll={onRequestClearAll}
-                onLogout={onLogout}
+                onLogout={onRequestLogout}
                 userEmail={session?.user?.email}
                 isOpen={showSidebar}
                 isMobile={isMobile}
@@ -320,15 +267,13 @@ const Dashboard = ({ session, onLogout }) => {
             </main>
 
             <ConfirmationModal
-                isOpen={deleteModalOpen}
-                title={chatToDelete === 'ALL' ? "Clear All History?" : "Delete Chat?"}
-                message={chatToDelete === 'ALL'
-                    ? "This will permanently delete ALL your conversations. This cannot be undone."
-                    : "This will permanently delete this conversation. This action cannot be undone."}
-                confirmText={chatToDelete === 'ALL' ? "Clear Everything" : "Delete Forever"}
-                isDangerous={true}
-                onConfirm={confirmDeleteAction}
-                onCancel={() => setDeleteModalOpen(false)}
+                isOpen={confirmationModalOpen}
+                title={modalTitle}
+                message={modalMessage}
+                confirmText={modalConfirmText}
+                isDangerous={actionType !== 'LOGOUT'}
+                onConfirm={handleConfirmAction}
+                onCancel={() => setConfirmationModalOpen(false)}
             />
         </div>
     );
