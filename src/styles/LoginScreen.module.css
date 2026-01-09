@@ -18,7 +18,7 @@
     top: 0;
     left: 0;
     /* Uses CSS variables set by JS mouse event */
-    background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
             rgba(139, 92, 246, 0.15),
             transparent 60%);
     z-index: 1;
@@ -41,7 +41,7 @@
         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
     z-index: 0;
-    mask-image: radial-gradient(1000px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    mask-image: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
             black 40%,
             transparent 100%);
     /* Only show grid near mouse? Or just have it static? 
