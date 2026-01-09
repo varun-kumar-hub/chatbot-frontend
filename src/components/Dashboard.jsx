@@ -27,6 +27,14 @@ const Dashboard = ({ session, onLogout }) => {
 
     // ... (Fetch chats/messages remains same) 
 
+    // Theme State
+    const [isDarkMode, setIsDarkMode] = useState(true);
+
+    const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
+        document.body.classList.toggle('light-theme');
+    };
+
     const onRequestDeleteChat = (chatId) => {
         setActionType('DELETE_SINGLE');
         setActionData(chatId);
