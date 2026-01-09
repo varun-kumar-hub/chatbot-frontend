@@ -23,9 +23,61 @@ const Dashboard = ({ session, onLogout }) => {
     const [modalMessage, setModalMessage] = useState('');
     const [modalConfirmText, setModalConfirmText] = useState('Confirm');
 
-    // ... (Resize effect remains same)
+    // 0. Handle Resize
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (!mobile) setShowSidebar(true); // Always show on desktop
+            else setShowSidebar(false); // Default hide on mobile
+        };
 
-    // ... (Fetch chats/messages remains same) 
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Init
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // 1. Fetch Chats on Mount
+    useEffect(() => {
+        fetchChats();
+    }, [session]);
+
+    const fetchChats = async () => {
+        const { data, error } = await supabase
+            .from('chats')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) console.error('Error fetching chats:', error);
+        else {
+            setChats(data);
+            if (data.length > 0 && !activeChatId) {
+                setActiveChatId(data[0].id);
+            }
+        }
+    };
+
+    // 2. Fetch Messages when Active Chat Changes
+    useEffect(() => {
+        if (!activeChatId) {
+            setMessages([]);
+            return;
+        }
+        fetchMessages(activeChatId);
+    }, [activeChatId]);
+
+    const fetchMessages = async (chatId) => {
+        setLoadingMessages(true);
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('chat_id', chatId)
+            .order('created_at', { ascending: true });
+
+        if (error) console.error('Error fetching messages:', error);
+        else setMessages(data);
+        setLoadingMessages(false);
+    };
 
     // Theme State
     const [isDarkMode, setIsDarkMode] = useState(true);
