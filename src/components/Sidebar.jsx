@@ -68,31 +68,17 @@ const Sidebar = ({ chats, activeChatId, onSelectChat, onNewChat, onDeleteChat, o
                 </div>
 
                 <div className={styles.footer}>
-                    <div className={styles.userProfile}>
+                    <div className={styles.userProfile} onClick={onOpenSettings} role="button" tabIndex={0}>
                         <div className={styles.avatar}>
                             {userEmail ? userEmail[0].toUpperCase() : 'U'}
                         </div>
                         <div className={styles.userInfo}>
                             <span className={styles.userName}>Varun Kumar</span>
-                            <span className={styles.userEmail} title={userEmail}>{userEmail}</span>
+                            <span className={styles.userEmail}>{userEmail}</span>
                         </div>
-                    </div>
-
-                    <div className={styles.footerDivider} />
-
-                    <div className={styles.footerActions}>
-                        <button className={styles.footerBtn} onClick={onToggleTheme} title="Toggle Theme">
-                            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
-                        <button className={styles.footerBtn} onClick={onOpenSettings} title="Settings">
-                            <Settings size={18} />
-                        </button>
-                        <button className={styles.footerBtn} onClick={onClearAll} title="Clear All History" style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }}>
-                            <Trash2 size={18} />
-                        </button>
-                        <button className={styles.footerBtn} onClick={onLogout} title="Sign Out">
-                            <LogOut size={18} />
-                        </button>
+                        <div className={styles.profileChevron}>
+                            <Settings size={16} />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -395,6 +395,8 @@ const Dashboard = ({ session, onLogout }) => {
                 activePersona={activePersona}
                 onSetPersona={setActivePersona}
                 userEmail={session?.user?.email}
+                onClearAll={onRequestClearAll}
+                onLogout={onRequestLogout}
             />
         </div>
     );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Moon, Sun, Monitor, Cpu, User } from 'lucide-react';
+import { X, Moon, Sun, Monitor, Cpu, User, Trash2, LogOut } from 'lucide-react';
 import styles from '../styles/SettingsModal.module.css';
 import { PERSONAS } from '../data/personas';
 
@@ -74,7 +74,7 @@ const SettingsModal = ({ isOpen, onClose, isDarkMode, onToggleTheme, activePerso
                 </div>
 
                 <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Account</h3>
+                    <h3 className={styles.sectionTitle}>Account & Data</h3>
                     <div className={styles.row}>
                         <div className={styles.label}>
                             <User size={18} />
@@ -82,6 +82,18 @@ const SettingsModal = ({ isOpen, onClose, isDarkMode, onToggleTheme, activePerso
                         </div>
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{userEmail}</span>
                     </div>
+                </div>
+
+                <div className={styles.section}>
+                    <h3 className={styles.sectionTitle}>Session</h3>
+
+                    <button className={styles.actionBtn} onClick={onClearAll} style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div className={styles.iconBox}><Trash2 size={16} /></div> Clear All History</span>
+                    </button>
+
+                    <button className={styles.actionBtn} onClick={onLogout}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><div className={styles.iconBox}><LogOut size={16} /></div> Sign Out</span>
+                    </button>
                 </div>
 
             </div>
