@@ -6,8 +6,72 @@ import { Copy, Check, ThumbsUp, ThumbsDown, Bot } from 'lucide-react';
 import remarkGfm from 'remark-gfm';
 import styles from '../styles/AdvancedChatMessage.module.css';
 
+const GeneratedImage = ({ query }) => {
+    const [imageUrl, setImageUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [photographer, setPhotographer] = useState(null);
+    const [error, setError] = useState(false);
+
+    React.useEffect(() => {
+        const fetchImage = async () => {
+            try {
+                let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+                if (BACKEND_URL.endsWith('/')) BACKEND_URL = BACKEND_URL.slice(0, -1);
+                if (BACKEND_URL && !BACKEND_URL.startsWith('http')) BACKEND_URL = `https://${BACKEND_URL}`;
+                const endpoint = `${BACKEND_URL}/image`;
+
+                const formData = new FormData();
+                formData.append('query', query);
+
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error('Failed to fetch image');
+
+                const data = await res.json();
+                if (data.url) {
+                    setImageUrl(data.url);
+                    setPhotographer(data.photographer);
+                } else {
+                    setError(true);
+                }
+            } catch (err) {
+                console.error("Image Fetch Error:", err);
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchImage();
+    }, [query]);
+
+    if (loading) return (
+        <div className={styles.imageSkeleton}>
+            <span className={styles.loadingPulse}>Generating "{query}"...</span>
+        </div>
+    );
+
+    if (error) return (
+        <div className={styles.imageError}>
+            <span>Could not generate image for "{query}"</span>
+        </div>
+    );
+
+    return (
+        <div className={styles.generatedImageContainer}>
+            <img src={imageUrl} alt={query} className={styles.generatedImage} />
+            <div className={styles.imageOverlay}>
+                <span>Photo by {photographer} on Pexels</span>
+            </div>
+        </div>
+    );
+};
+
 const AdvancedChatMessage = ({ content, isTyping }) => {
-    const [liked, setLiked] = useState(null); // 'up' or 'down'
+    const [liked, setLiked] = useState(null);
 
     const handleCopy = (code) => {
         navigator.clipboard.writeText(code);
@@ -50,6 +114,9 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
         );
     };
 
+    // Split content by image tags
+    const parts = content.split(/\(\(GENERATE_IMAGE: (.*?)\)\)/g);
+
     return (
         <div className={styles.messageContainer}>
             <div className={styles.avatarCol}>
@@ -60,15 +127,24 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
 
             <div className={styles.contentCol}>
                 <div className={styles.bubble}>
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            code: CodeBlock,
-                            a: ({ node, ...props }) => <a className={styles.link} target="_blank" rel="noopener noreferrer" {...props} />
-                        }}
-                    >
-                        {content}
-                    </ReactMarkdown>
+                    {parts.map((part, index) => {
+                        // Even indices are text, Odd are image queries
+                        if (index % 2 === 1) {
+                            return <GeneratedImage key={index} query={part} />;
+                        }
+                        return (
+                            <ReactMarkdown
+                                key={index}
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    code: CodeBlock,
+                                    a: ({ node, ...props }) => <a className={styles.link} target="_blank" rel="noopener noreferrer" {...props} />
+                                }}
+                            >
+                                {part}
+                            </ReactMarkdown>
+                        );
+                    })}
                     {isTyping && <span className={styles.cursor}></span>}
                 </div>
 

@@ -7,8 +7,9 @@ import styles from '../styles/ChatWindow.module.css';
 const PERSONAS = [
     { id: 'standard', name: 'Standard', icon: <Sparkles size={14} />, prompt: '' },
     { id: 'dev', name: 'Developer', icon: <Code size={14} />, prompt: '[SYSTEM: Act as a Senior Software Engineer. Provide efficient, well-commented code.] ' },
-    { id: 'witty', name: 'Witty', icon: <Mic size={14} />, prompt: '[SYSTEM: Be witty, sarcastic, and entertaining, but still helpful.] ' },
-    { id: 'pro', name: 'Executive', icon: <Briefcase size={14} />, prompt: '[SYSTEM: Use formal, concise, and professional business language.] ' }
+    { id: 'researcher', name: 'Researcher', icon: <Briefcase size={14} />, prompt: '[SYSTEM: Act as a Document Analyst. Analyze the context/files deeply and provide cited, factual answers.] ' },
+    { id: 'designer', name: 'Designer', icon: <Sparkles size={14} />, prompt: '[SYSTEM: Act as a Creative Director. Focus on visual descriptions and generate images when appropriate.] ' },
+    { id: 'witty', name: 'Witty', icon: <Mic size={14} />, prompt: '[SYSTEM: Be witty, sarcastic, and entertaining, but still helpful.] ' }
 ];
 
 const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, isLoading, isMobile, onToggleSidebar, userName = 'User' }) => {
