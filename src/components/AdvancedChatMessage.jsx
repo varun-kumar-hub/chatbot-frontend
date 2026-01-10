@@ -88,6 +88,7 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
 
     const MermaidBlock = ({ chart }) => {
         const [svg, setSvg] = useState('');
+        const [error, setError] = useState(false);
         const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
         React.useEffect(() => {
@@ -95,13 +96,27 @@ const AdvancedChatMessage = ({ content, isTyping }) => {
                 try {
                     const { svg } = await mermaid.render(id, chart);
                     setSvg(svg);
+                    setError(false);
                 } catch (error) {
                     console.error("Mermaid Render Error:", error);
-                    setSvg(`<div class="struct-error">Invalid Diagram Syntax</div>`);
+                    setError(true);
                 }
             };
             if (chart) renderChart();
         }, [chart, id]);
+
+        if (error) {
+            return (
+                <div className={styles.codeWrapper} style={{ border: '1px solid #ef4444' }}>
+                    <div className={styles.codeHeader} style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+                        <span className={styles.langTag} style={{ color: '#ef4444' }}>Mermaid Syntax Error</span>
+                    </div>
+                    <div style={{ padding: '12px', color: '#fca5a5', fontFamily: 'monospace', fontSize: '0.9rem', overflowX: 'auto' }}>
+                        <pre style={{ margin: 0 }}>{chart}</pre>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div
