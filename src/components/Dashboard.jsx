@@ -57,6 +57,7 @@ const Dashboard = ({ session, onLogout }) => {
         const { data, error } = await supabase
             .from('chats')
             .select('*')
+            .eq('user_id', session.user.id) // Filter by current user
             .order('created_at', { ascending: false });
 
         if (error) console.error('Error fetching chats:', error);
