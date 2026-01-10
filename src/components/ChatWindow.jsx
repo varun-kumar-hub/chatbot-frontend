@@ -29,23 +29,23 @@ const ChatWindow = ({ activeChatId, currentChatTitle, messages, onSendMessage, i
         e.preventDefault();
         if (!input.trim() && !file) return;
 
-        let finalMessage = input;
+        // Identify active persona
         const persona = PERSONAS.find(p => p.id === activePersona);
+        let personaPrompt = null;
 
-        // Add Prompt only if it's NOT the standard persona and NOT an empty message
+        // Get Prompt only if it's NOT the standard persona
         if (persona && persona.prompt && persona.id !== 'standard') {
-            if (finalMessage) {
-                finalMessage = persona.prompt + finalMessage;
-            }
+            personaPrompt = persona.prompt;
         }
 
         const userFile = file;
+        const userText = input;
 
         setInput('');
         setFile(null);
         if (fileInputRef.current) fileInputRef.current.value = '';
 
-        onSendMessage(finalMessage, userFile);
+        onSendMessage(userText, userFile, personaPrompt);
     };
 
     // --- Empty State UI ---

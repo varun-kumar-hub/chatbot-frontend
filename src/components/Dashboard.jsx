@@ -228,7 +228,7 @@ const Dashboard = ({ session, onLogout }) => {
         });
     };
 
-    const handleSendMessage = async (text, file) => {
+    const handleSendMessage = async (text, file, personaPrompt) => {
         if (!activeChatId) return;
         if (!text && !file) return;
 
@@ -236,7 +236,7 @@ const Dashboard = ({ session, onLogout }) => {
         const tempMsg = {
             id: 'temp-' + Date.now(),
             sender: 'user',
-            content: text || (file ? "" : ""),
+            content: text || (file ? "" : ""), // Display only USER text
             file_url: file ? URL.createObjectURL(file) : null,
             created_at: new Date().toISOString()
         };
@@ -254,8 +254,9 @@ const Dashboard = ({ session, onLogout }) => {
             // Call Backend API
             const formData = new FormData();
             formData.append('chat_id', activeChatId);
-            if (text) formData.append('message', text);
+            if (text) formData.append('message', text); // Send clean text as message
             if (fileToUpload) formData.append('file', fileToUpload);
+            if (personaPrompt) formData.append('persona_prompt', personaPrompt); // Send hidden instruction
 
             // Add persona prompt if needed (Usually handled by prompt engineering on backend or frontend before send. 
             // Since we moved state here, backend prompt injection is cleaner if handled here or in ChatWindow submit.
