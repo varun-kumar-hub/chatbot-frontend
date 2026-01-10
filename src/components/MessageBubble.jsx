@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '../styles/MessageBubble.module.css';
-import { Bot, User } from 'lucide-react';
+import { Bot, User, Copy } from 'lucide-react';
 
 const MessageBubble = ({ sender, content, fileUrl }) => {
     const isUser = sender === 'user';
