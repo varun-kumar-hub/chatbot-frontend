@@ -29,6 +29,9 @@ const MessageBubble = ({ sender, content, fileUrl }) => {
         );
     };
 
+    // Clean content for display (removes old SYSTEM tags from history)
+    const displayContent = content ? content.replace(/^\[SYSTEM:.*?\]\s*/, '') : '';
+
     return (
         <div className={`${styles.messageRow} ${isUser ? styles.userRow : styles.aiRow}`}>
             {!isUser && (
@@ -40,12 +43,12 @@ const MessageBubble = ({ sender, content, fileUrl }) => {
             <div className={styles.bubbleContainer}>
                 <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.aiBubble}`}>
                     {renderAttachment()}
-                    {content && <div className={styles.text}>{content}</div>}
+                    {displayContent && <div className={styles.text}>{displayContent}</div>}
                 </div>
                 {/* Copy Button for User - Shows on Hover/Touch */}
                 <button
                     className={styles.copyBtnUser}
-                    onClick={() => navigator.clipboard.writeText(content)}
+                    onClick={() => navigator.clipboard.writeText(displayContent)}
                     title="Copy Text"
                 >
                     <Copy size={12} />
